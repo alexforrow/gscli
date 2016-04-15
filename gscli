@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+require 'json'
+require 'google_drive'
+require 'optparse'
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: gscli [options]"
+
+  opts.on("-s", "--spreadsheet spreadsheet_id", "Spreadsheet id") do |s|
+    options[:spreadsheet] = s
+  end
+
+  opts.on("--cell x,y",Array, "Cell") do |s|
+    options[:cell] = s
+  end
+
+  opts.on("--worksheet worksheet", "Worksheet title") do |w|
+    options[:worksheet] = w
+  end
+
+end.parse!
+
+raise "Spreadsheet not specified" unless options.include?(:spreadsheet)
+raise "Cell not specified" unless options.include?(:cell)
+
+session = GoogleDrive.saved_session("gscli_auth.json")
+
+ws = session.spreadsheet_by_key(options[:spreadsheet]).worksheet_by_title(options[:worksheet])
+
+# all it can do for now is read the cell
+puts ws[options[:cell].first.to_i, options[:cell].last.to_i]
+
