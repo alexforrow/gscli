@@ -1,0 +1,2 @@
+# gscli
+Google Spreadsheet CLI
